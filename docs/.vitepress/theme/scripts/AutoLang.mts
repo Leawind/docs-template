@@ -74,7 +74,6 @@ async function detectAndAutoJump() {
  */
 async function AutoLang() {
 	detectAndAutoJump();
-	setInterval(detectAndAutoJump, 1000);
 };
 
 export default AutoLang;
