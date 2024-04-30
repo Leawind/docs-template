@@ -1,32 +1,5 @@
 import { langs } from '../../locales.mts';
 
-/**
- * 在url后指定autolang参数后，会自动跳转到当前浏览器语言
- */
-async function AutoLang() {
-	const url = getURL();
-	const bp = new BasedPath(url.pathname, getBase());
-	const expectedLanguage = getExpectedLanguage();
-	const autolang: boolean = url.searchParams.has('autolang');
-
-	if (!bp.isLangSpecified) {
-		jump();
-	} else if (autolang && (bp.lang !== expectedLanguage)) {
-		jump();
-	}
-
-	function jump() {
-		bp.lang = expectedLanguage;
-		const newUrl = getURL();
-		newUrl.searchParams.delete('autolang');
-		newUrl.pathname = bp.toString();
-		location.replace(newUrl.toString());
-	}
-};
-
-export default AutoLang;
-
-
 class BasedPath {
 	public base: string = '';
 	public lang: string = '';
@@ -64,7 +37,7 @@ function isLangSupported(lang: string): boolean {
 }
 
 function getBase() {
-	return globalThis.useData().site.getter().base.replace(/\//g, '');
+	return (globalThis.useData().site as any).getter().base.replace(/\//g, '');
 }
 
 function pathjoin(...paths) {
@@ -74,3 +47,35 @@ function pathjoin(...paths) {
 function getExpectedLanguage() {
 	return isLangSupported(navigator.language) ? navigator.language : langs[0];
 }
+
+async function detectAndAutoJump() {
+	const url = getURL();
+	const bp = new BasedPath(url.pathname, getBase());
+	const expectedLanguage = getExpectedLanguage();
+	const autolang: boolean = url.searchParams.has('autolang');
+
+	if (!bp.isLangSpecified) {
+		jump();
+	} else if (autolang && (bp.lang !== expectedLanguage)) {
+		jump();
+	}
+
+	function jump() {
+		bp.lang = expectedLanguage;
+		const newUrl = getURL();
+		newUrl.searchParams.delete('autolang');
+		newUrl.pathname = bp.toString();
+		location.replace(newUrl.toString());
+	}
+}
+
+/**
+ * 在url后指定autolang参数后，会自动跳转到当前浏览器语言
+ */
+async function AutoLang() {
+	detectAndAutoJump();
+	setInterval(detectAndAutoJump, 1000);
+};
+
+export default AutoLang;
+

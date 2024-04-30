@@ -6,6 +6,6 @@ import TopLayout from './TopLayout.vue';
 export default {
 	extends: DefaultTheme,
 	Layout: () => h(DefaultTheme.Layout, null, {
-		"layout-top": () => h(TopLayout),
+		'layout-top': () => h(TopLayout),
 	}),
 } satisfies Theme;
