@@ -91,27 +91,18 @@ export function buildSidebar(dir: string, docsRoot: string = 'docs'): DefaultThe
 	}
 
 	/**
-	 * This file is a valid page file
-	 * 
-	 * @param {string} filePath The file path or just file name
-	 */
-	function isPageFile(filePath) {
-		return /.*\.(md)|(html)|(htm)$/i.test(filePath);
-	}
-
-	/**
-	 * Check if the specified directory contains any page file.
-	 */
-	function hasPageFile(dirPath: string) {
-		for (const subname of fs.readdirSync(dirPath))
-			if (isPageFile(subname)) return true;
-		return false;
-	}
-	/**
 	 * Check if the specified path is a page file or a directory contains any page file.
 	 */
 	function isOrHasPageFile(apath: string) {
-		if (fs.statSync(apath).isFile()) return isPageFile(apath);
-		else return hasPageFile(apath);
+		const stat = fs.statSync(apath);
+		if (stat.isFile()) {
+			return /.*\.(md)|(html)|(htm)$/i.test(apath);
+		} else if (stat.isDirectory()) {
+			for (const subName of fs.readdirSync(apath)) {
+				const subPath = path.join(apath, subName);
+				if (isOrHasPageFile(subPath)) return true;
+			}
+			return false;
+		}
 	}
 }
