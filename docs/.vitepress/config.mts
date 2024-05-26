@@ -2,6 +2,7 @@ import { defineConfig } from 'vitepress';
 import locales from './locales.mts';
 
 export default defineConfig({
+	title: 'docs-template',
 	base: '/docs-template/',
 	srcDir: '.',
 	cleanUrls: true,
