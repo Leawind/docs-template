@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path/posix';
+import { UserConfig } from 'vitepress';
 
 import { DefaultTheme } from 'vitepress/theme';
 

@@ -1,3 +1,4 @@
+import { UserConfig } from "vitepress";
 import { buildSidebar } from "../builders.mts";
 
 const lang = 'en-US';
@@ -32,4 +33,4 @@ export default {
 		},
 		lastUpdated: { text: "Last updated", },
 	},
-};
+} as UserConfig;
