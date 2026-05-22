@@ -3,98 +3,103 @@
 
 # docs-template
 
-A documentation template build by vitepress
-
-See [live example](https://leawind.github.io/docs-template/en-US/?autolang)
+A documentation template built with VitePress + Deno.
 
 ## Features
 
-* **International** Multi language supported
-* **Search in Chinese (Not perfect)**
-* Auto redirect to browser langugage when no language code specified in url
-  * `/` -> `/en-US/`
-  * `/Donate` -> `/en-US/Donate`
-* **URL search params parsing**
-  * `?search=%s` Once page is loaded, open search box and auto search
-  * `?autolang` Auto jump to the language provided by `navigator.language`
-    * `/zh-CN/changelog` -> `/en-US/changelog`
+- **Multi-language** — `en_us` and `zh_cn` out of the box, easy to add more.
+- **Auto sidebar** — Sidebar is generated automatically from directory structure.
+- **Mermaid diagrams** — Built-in support via `vitepress-plugin-mermaid`.
+- **Math formulas** — KaTeX rendering for inline and block math.
+- **Local search** — Full-text search with i18n support.
 
-# Q&A
+## Quick Start
 
-## How to add new language support
+```bash
+# Install Deno: https://deno.com
+deno task docs:dev
+```
 
-For example, language ID is `ru`.
+## How to add a new language
 
-1. Create folder `docs/ru`
-1. Add locale config `docs/.vitepress/locales/ru.mts`
-1. Add locale define in `docs/.vitepress/locales.mts`
-	```ts {4}
-	const langs = [
-		'en-US',
-		'zh-CN',
-		'ru',
-	];
+For example, add language `ru`:
 
-	...
-	```
+1. Create content directory `docs/ru/`
+2. Add a locale entry in `docs/.vitepress/locales.ts` using `defineLocale()`
 
-## How to add a new sector
+## How to add a new section
 
-For example, sector name is `readme`
+For example, a section called `readme`:
 
-1. Create directory `docs/readme/`
-1. Create index page `docs/readme/index.md`
-1. Add to nav bar
-	Edit every locale script under `docs/.vitepress/locales/`
-	```ts {6-7,12-13}
-	...
+1. Create `docs/en_us/readme/` and `docs/zh_cn/readme/`
+2. Put an `index.md` in each with a `title:` in frontmatter
+3. Add nav links in `docs/.vitepress/locales.ts`
 
-		themeConfig: {
-			nav: [
-				...
-				// Add to nav bar
-				{ text: 'Readme', link: `/${lang}/readme/` },
-			],
-			sidebar: {
-				...
+The sidebar is generated automatically — no manual config needed.
 
-				// Auto generate sidebar
-				'/zh-CN/readme': buildSidebar(`/${lang}/readme`),
-			}
-		}
+## Sidebar generation rules
 
-	...
-	```
+The sidebar is built from directory structure. You only need to organize your
+files — no sidebar config to write.
+
+### Top-level scanning
+
+Each directory directly under the language root (e.g. `en_us/guide/`) becomes
+a sidebar section. Files at the language root (like `quickref.md`) do not get
+sidebar entries.
+
+### Ordering
+
+Files are sorted by number prefix. A file named `01-intro.md` comes before
+`02-setup.md`, which comes before `appendix.md` (no prefix). Number prefixes
+are stripped from the displayed title.
+
+### Titles
+
+Each page's sidebar title comes from the `title` field in its YAML frontmatter.
+If absent, the filename (minus extension and number prefix) is used as a
+fallback.
+
+### Page link vs. group-only
+
+A directory's `index.md` determines whether the sidebar group is clickable:
+
+- If it has a `title` in frontmatter — the title is used as the group label.
+- If the body is non-empty (has actual content) — the group entry becomes a
+  clickable link.
+- If the body is empty (just frontmatter, no content) — the group is a
+  label-only folder, not clickable.
+
+### Nested directories
+
+Subdirectories become collapsible groups. They are automatically promoted to
+the top level of the sidebar (sibling to their parent), not nested inside. Each
+subdirectory follows the same rules as above for title, link, and ordering.
+
+### Summary
+
+| Rule                   | Behavior                                              |
+| ---------------------- | ----------------------------------------------------- |
+| What becomes a sidebar | Directories under the language root                   |
+| Order                  | By number prefix in filename                          |
+| Item title             | Frontmatter `title`, or filename sans prefix          |
+| Nested groups          | Subdirectories appear as top-level collapsible groups |
+| Clickable group        | `index.md` has non-empty body                         |
 
 ## How to change base (`/` by default)
 
-For example, set base to `Third-Person`
+Edit `docs/.vitepress/config.ts`:
 
-Just modify `.vitepress/config.mts`
-
-```ts {2}
-export default defineConfig({
-base: 'Third-Person',
-
-...
-});
+```ts
+const BASE = '/your-project'
 ```
 
-## How to change source root dir (`.` usually)
+## How to change source root dir (`.` by default)
 
-For example, change source root to `pages`
+Edit `docs/.vitepress/config.ts`:
 
-1. Edit `docs/.vitepress/config.mts`
-	```ts {2}
-	export default defineConfig({
-		srcDir: 'pages',
+```ts
+srcDir: 'pages',
+```
 
-		...
-	})
-	```
-1. Edit `docs/.vitepress/builders.mts`
-	```ts
-	export function buildSidebar(dir: string, docsRoot: string = 'pages'): any {
-
-		...
-	```
+Then update the `base` default in `docs/.vitepress/utils/sidebar.ts`.

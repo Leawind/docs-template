@@ -19,11 +19,10 @@ node_modules/
 
 # AI tools
 /.ai/
-.claude/
 .clinerules/
-.codebuddy/
 .cursorrules/
-.kilocode/
-.lingma/
+.kilo/
 .marscode/
+.lingma/
 .trae/
+.codebuddy/

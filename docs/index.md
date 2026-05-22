@@ -1,3 +1,9 @@
-# Redirecting to your language, Hang tight...
+<meta http-equiv="refresh" content="0; url=/en_us/" />
 
-# 正在跳转到您的语言，坚持一下…
+[Redirecting, if it doesn't work, please click here](/en_us/)
+
+<script setup>
+if('window' in globalThis){
+  globalThis.window.location.href = '/en_us/';
+}
+</script>
