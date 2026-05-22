@@ -6,6 +6,27 @@ title: Markdown Example
 
 ## Custom Containers
 
+Two syntaxes are supported. **The first one (GitHub-style callout) is preferred**:
+
+### GitHub Style (Recommended)
+
+> [!NOTE]
+> For displaying supplementary information.
+
+> [!TIP]
+> For providing usage advice.
+
+> [!WARNING]
+> For alerting users to potential issues.
+
+> [!CAUTION]
+> For warning about risks or consequences.
+
+> [!IMPORTANT]
+> For emphasizing important information.
+
+### VitePress Container Syntax
+
 ::: info Information
 For displaying supplementary information.
 :::

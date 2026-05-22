@@ -10,10 +10,10 @@ This documentation is built with [VitePress](https://vitepress.dev/) and deploye
 
 Sidebars are auto-generated from the directory structure — just add Markdown files under the language directory.
 
-See the [Adding Content](./10-content) guide, or visit the [Examples section](../examples/) for live examples of extended syntaxes and nested sidebars. Also check out:
+See the [Adding Content](./content) guide, or visit the [Examples section](../examples/) for live examples of extended syntaxes and nested sidebars. Also check out:
 
-- [Project Architecture](./00-arch)
-- [Multi-language](./20-translate)
+- [Project Architecture](./arch)
+- [Multi-language](./translate)
 
 ## Development Environment
 

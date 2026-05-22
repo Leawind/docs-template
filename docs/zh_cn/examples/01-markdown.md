@@ -6,6 +6,27 @@ title: Markdown 示例
 
 ## 自定义容器
 
+支持两种写法，**更推荐第一种**（GitHub 风格 callout）：
+
+### GitHub 风格（推荐）
+
+> [!NOTE]
+> 用来展示补充信息。
+
+> [!TIP]
+> 用来提供使用建议。
+
+> [!WARNING]
+> 提醒用户注意潜在问题。
+
+> [!CAUTION]
+> 警告用户风险或后果。
+
+> [!IMPORTANT]
+> 强调重要信息。
+
+### VitePress 容器语法
+
 ::: info 信息框
 用来展示补充信息。
 :::
