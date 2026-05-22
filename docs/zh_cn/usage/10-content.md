@@ -43,3 +43,10 @@ title: 页面标题
 1. `00-arch.md`
 2. `10-usage.md`
 3. `final.md`
+
+> [!NOTE]
+> 序号前缀仅用于控制排序，**不会出现在 URL 中**。
+> 例如 `00-arch.md` 对应 URL 为 `/zh_cn/usage/arch`。
+
+> [!CAUTION]
+> 同一目录下，去掉前缀后 base-name 相同的文件（如 `10-start.md` 和 `15-start.md`）会导致 URL 冲突，**构建将会报错终止**。

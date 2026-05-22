@@ -2,6 +2,7 @@ import 'jsr:@std/dotenv@0.225.6/load'
 import { DefaultTheme, defineConfig, UserConfig } from 'vitepress'
 import { withMermaid } from 'vitepress-plugin-mermaid'
 import locales from './locales.ts'
+import { buildRewrites } from './utils/sidebar.ts'
 
 const BASE = '/'
 const isDev = Deno.args.includes('dev')
@@ -11,6 +12,7 @@ let config: UserConfig = {
   srcDir: '.',
   outDir: '../dist',
   cleanUrls: true,
+  rewrites: buildRewrites('docs', Object.keys(locales)),
 
   title: 'docs-template',
   description: 'A documentation template build by vitepress',

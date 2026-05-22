@@ -43,3 +43,10 @@ Example:
 1. `00-arch.md`
 2. `10-usage.md`
 3. `final.md`
+
+> [!NOTE]
+> Numeric prefixes are used **only for ordering** and do **not appear in the URL**.
+> For example, `00-arch.md` maps to URL `/en_us/usage/arch`.
+
+> [!CAUTION]
+> Files in the same directory whose base name (after stripping the prefix) is identical (e.g., `10-start.md` and `15-start.md`) will cause a URL conflict. **The build will fail with an error**.

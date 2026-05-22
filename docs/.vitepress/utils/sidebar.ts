@@ -4,6 +4,35 @@ import * as fs from '@leawind/inventory/fs'
 import * as frontMatter from 'jsr:@std/front-matter@1.0.9'
 import { DefaultTheme } from 'vitepress/theme'
 
+/** 去掉路径片段中的 `NN-` 序号前缀 */
+function stripPrefix(segment: string): string {
+  return segment.replace(/^\d+-/, '')
+}
+
+/**
+ * 检测同一目录下，去掉前缀后 base-name 重复的文件。
+ * 发现冲突时打印错误并退出构建。
+ */
+function checkDuplicateBaseNames(entries: Path[]): void {
+  const baseNameCount = new Map<string, string[]>()
+  for (const entry of entries) {
+    if (!entry.isFileSync() || entry.name === 'index.md') { continue }
+    const base = stripPrefix(entry.nameNoExt)
+    if (!baseNameCount.has(base)) { baseNameCount.set(base, []) }
+    baseNameCount.get(base)!.push(entry.name)
+  }
+  let hasConflict = false
+  for (const [base, files] of baseNameCount) {
+    if (files.length > 1) {
+      log.error(
+        `文件名冲突: ${files.join(', ')} 去掉前缀后都映射到 "${base}"`,
+      )
+      hasConflict = true
+    }
+  }
+  if (hasConflict) { Deno.exit(1) }
+}
+
 export function buildSidebars(
   base: PathLike,
   lang: string,
@@ -74,11 +103,14 @@ function buildSidebarRecursive(options: Options): DefaultTheme.SidebarItem {
     dirHasBody = indexInfo.body.trim() !== ''
   }
 
+  const entries = dir.listSync()
+  checkDuplicateBaseNames(entries)
+
   return {
     text: dirTitle,
     collapsed: true,
     ...(dirHasBody ? { link: getLink(dir, base) } : {}),
-    items: dir.listSync()
+    items: entries
       .sort((a, b) => {
         const num = (name: string) => {
           const match = name.match(/^(\d+)-/)
@@ -142,6 +174,66 @@ function getLink(file: PathLike, base: PathLike) {
   return '/' + file.relative(base)
     .toString()
     .replace(/(^\/*)|(\/*$)/g, '') // remove leading and trailing slashes
+    .split('/')
+    .map(stripPrefix)
+    .join('/')
     .replace(/\.md$/g, '') // remove .md suffix
     .replace(/\.html?$/g, '') // remove .htm(l) suffix
+}
+
+/**
+ * 扫描语言目录下所有 .md 文件，生成 VitePress rewrites 映射表。
+ * 同时检测去掉前缀后 base-name 重复的文件，发现冲突则报错退出。
+ */
+export function buildRewrites(
+  base: PathLike,
+  langs: string[],
+): Record<string, string> {
+  const rewrites: Record<string, string> = {}
+  const basePath = Path.from(base)
+  let hasConflict = false
+
+  for (const lang of langs) {
+    const langRoot = fs.P`${basePath}/${lang}`
+    scanDir(langRoot)
+  }
+
+  if (hasConflict) { Deno.exit(1) }
+  return rewrites
+
+  function scanDir(dir: Path): void {
+    const fileMap = new Map<string, string[]>() // baseName -> [originalNames]
+
+    for (const entry of dir.listSync()) {
+      if (entry.isFileSync()) {
+        if (entry.name === 'index.md') { continue }
+
+        const baseName = stripPrefix(entry.nameNoExt)
+        const relativePath = entry.relative(basePath).toString()
+
+        rewrites[relativePath] = relativePath
+          .split('/')
+          .map(stripPrefix)
+          .join('/')
+
+        // 冲突检测
+        if (!fileMap.has(baseName)) {
+          fileMap.set(baseName, [])
+        }
+        fileMap.get(baseName)!.push(entry.name)
+      } else {
+        scanDir(entry)
+      }
+    }
+
+    // 检查冲突
+    for (const [baseName, files] of fileMap) {
+      if (files.length > 1) {
+        log.error(
+          `文件名冲突: ${files.join(', ')} 去掉前缀后都映射到 "${baseName}"`,
+        )
+        hasConflict = true
+      }
+    }
+  }
 }
