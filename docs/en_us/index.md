@@ -16,10 +16,13 @@ hero:
 features:
   - icon: 🌐
     title: Multi-language
+    link: ./usage/translate
   - icon: 📂
     title: Auto Sidebar
     details: Sidebars are generated automatically from your directory structure.
+    link: ./usage/content
   - icon: 🧩
     title: Extended Syntax
     details: Supports 📊 Mermaid Diagrams and ∑ Latex Formulas.
+    link: ./examples/
 ---
